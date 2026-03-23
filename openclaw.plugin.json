@@ -1,0 +1,9 @@
+{
+  "id": "edith-glasses",
+  "channels": ["edith-glasses"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
