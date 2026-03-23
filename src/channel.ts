@@ -83,6 +83,28 @@ export const edithGlassesPlugin: ChannelPlugin<ResolvedEdithAccount> = {
     }),
   },
 
+  // ── Setup (used by `openclaw channels add edith-glasses`) ─────────
+
+  setup: {
+    applyAccountConfig: ({ cfg, input }) => {
+      const appUrl = (input as Record<string, unknown>).appUrl as string | undefined
+        || "https://your-edith-app.onrender.com";
+      const linkCode = (input as Record<string, unknown>).linkCode as string | undefined
+        || "PASTE_YOUR_LINK_CODE_HERE";
+      return {
+        ...cfg,
+        channels: {
+          ...(cfg as Record<string, unknown>).channels as Record<string, unknown> | undefined,
+          [CHANNEL_ID]: {
+            enabled: true,
+            appUrl,
+            linkCode,
+          },
+        },
+      } as OpenClawConfig;
+    },
+  },
+
   // ── Outbound ───────────────────────────────────────────────────────
 
   outbound: {

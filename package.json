@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SamDickworthy/openclaw-edith-glasses.git"
+    "url": "https://github.com/samdickson22/openclaw-edith-glasses.git"
   },
   "keywords": ["openclaw", "plugin", "edith", "smart-glasses", "mentra", "ai-assistant"],
   "devDependencies": {
@@ -15,6 +15,16 @@
   "openclaw": {
     "extensions": [
       "./index.ts"
-    ]
+    ],
+    "channel": {
+      "id": "edith-glasses",
+      "label": "Edith Glasses",
+      "selectionLabel": "Edith Smart Glasses",
+      "blurb": "Connect smart glasses to OpenClaw via WebSocket relay",
+      "docsPath": "/channels/edith-glasses"
+    },
+    "install": {
+      "npmSpec": "@openclaw/edith-glasses"
+    }
   }
 }
