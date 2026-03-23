@@ -1,5 +1,5 @@
 {
-  "id": "edith-glasses",
+  "id": "openclaw-edith-glasses",
   "channels": ["edith-glasses"],
   "configSchema": {
     "type": "object",

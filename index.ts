@@ -3,10 +3,10 @@ import { emptyPluginConfigSchema } from "openclaw/plugin-sdk";
 import { edithGlassesPlugin } from "./src/channel.js";
 import { setEdithGlassesRuntime } from "./src/runtime.js";
 
-const CHANNEL_ID = "edith-glasses";
+const PLUGIN_ID = "openclaw-edith-glasses";
 
 const plugin = {
-  id: CHANNEL_ID,
+  id: PLUGIN_ID,
   name: "Edith Glasses",
   description: "Edith smart glasses channel plugin",
   configSchema: emptyPluginConfigSchema(),
