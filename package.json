@@ -1,5 +1,5 @@
 {
-  "name": "@openclaw/edith-glasses",
+  "name": "openclaw-edith-glasses",
   "version": "0.1.0",
   "description": "OpenClaw channel plugin for Edith smart glasses — connects your glasses to your local OpenClaw agent via WebSocket relay",
   "type": "module",
@@ -24,7 +24,7 @@
       "docsPath": "/channels/edith-glasses"
     },
     "install": {
-      "npmSpec": "@openclaw/edith-glasses"
+      "npmSpec": "openclaw-edith-glasses"
     }
   }
 }
