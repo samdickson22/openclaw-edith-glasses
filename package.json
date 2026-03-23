@@ -1,6 +1,6 @@
 {
   "name": "openclaw-edith-glasses",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OpenClaw channel plugin for Edith smart glasses — connects your glasses to your local OpenClaw agent via WebSocket relay",
   "type": "module",
   "license": "MIT",
