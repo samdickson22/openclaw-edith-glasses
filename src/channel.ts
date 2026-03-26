@@ -12,6 +12,7 @@ import {
 import { getEdithGlassesRuntime } from "./runtime.js";
 
 const CHANNEL_ID = "edith-glasses";
+const DEFAULT_APP_URL = "https://edith-production-a63c.up.railway.app";
 const meta = getChatChannelMeta(CHANNEL_ID);
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -86,11 +87,15 @@ export const edithGlassesPlugin: ChannelPlugin<ResolvedEdithAccount> = {
   // ── Setup (used by `openclaw channels add edith-glasses`) ─────────
 
   setup: {
+    validateInput: ({ input }) => {
+      if (!input.token) {
+        return "Missing --token <linkCode>. Get your link code from the Edith app settings page on your glasses.";
+      }
+      return null;
+    },
     applyAccountConfig: ({ cfg, input }) => {
-      const appUrl = (input as Record<string, unknown>).appUrl as string | undefined
-        || "https://your-edith-app.onrender.com";
-      const linkCode = (input as Record<string, unknown>).linkCode as string | undefined
-        || "PASTE_YOUR_LINK_CODE_HERE";
+      const appUrl = input.httpUrl || DEFAULT_APP_URL;
+      const linkCode = input.token || "";
       return {
         ...cfg,
         channels: {
