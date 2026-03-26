@@ -264,23 +264,38 @@ async function handleInboundMessage(
     peer: { kind: "direct", id: peerId },
   });
 
-  // Download image if present
+  // Save image if present
   let mediaPath: string | undefined;
   let mediaType: string | undefined;
   if (msg.imageUrl) {
     try {
-      const fetched = await core.channel.media.fetchRemoteMedia(msg.imageUrl, {
-        maxBytes: 10 * 1024 * 1024,
-      });
-      if (fetched) {
-        const saved = await core.channel.media.saveMediaBuffer(fetched.buffer, {
-          contentType: fetched.contentType,
+      let buffer: Buffer;
+      let contentType: string;
+
+      if (msg.imageUrl.startsWith("data:")) {
+        // Decode data URL (data:image/jpeg;base64,...)
+        const match = msg.imageUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (match) {
+          contentType = match[1];
+          buffer = Buffer.from(match[2], "base64");
+        } else {
+          throw new Error("Invalid data URL format");
+        }
+      } else {
+        // Fetch from HTTP URL
+        const fetched = await core.channel.media.fetchRemoteMedia(msg.imageUrl, {
+          maxBytes: 10 * 1024 * 1024,
         });
-        mediaPath = saved.path;
-        mediaType = fetched.contentType;
+        if (!fetched) throw new Error("Failed to fetch image");
+        buffer = fetched.buffer;
+        contentType = fetched.contentType;
       }
+
+      const saved = await core.channel.media.saveMediaBuffer(buffer, { contentType });
+      mediaPath = saved.path;
+      mediaType = contentType;
     } catch (err) {
-      log?.warn(`[${accountId}] Edith glasses: failed to fetch image: ${String(err)}`);
+      log?.warn(`[${accountId}] Edith glasses: failed to process image: ${String(err)}`);
     }
   }
 
@@ -310,7 +325,10 @@ async function handleInboundMessage(
   });
 
   // Record session
-  const storePath = core.channel.session.resolveStorePath(cfg);
+  const storePath = core.channel.session.resolveStorePath(
+    (cfg as any).sessions?.store,
+    { agentId: route.agentId },
+  );
   await core.channel.session.recordInboundSession({
     storePath,
     sessionKey: ctxPayload.SessionKey ?? route.sessionKey,
@@ -379,15 +397,27 @@ async function handleInboundMessage(
       onIdle: typingCallbacks.onIdle,
     });
 
-  await core.channel.reply.dispatchReplyFromConfig({
-    ctx: ctxPayload,
-    cfg,
-    dispatcher,
-    replyOptions: {
-      ...replyOptions,
-      onModelSelected,
-    },
-  });
+  try {
+    const result = core.channel.reply.dispatchReplyFromConfig({
+      ctx: ctxPayload,
+      cfg,
+      dispatcher,
+      replyOptions: {
+        ...replyOptions,
+        onModelSelected,
+      },
+    });
+    // Handle both sync and async results
+    if (result && typeof (result as any).then === "function") {
+      await result;
+    }
+  } catch (err) {
+    log?.error(`[${accountId}] dispatchReplyFromConfig error: ${String(err)}`);
+    // Send error back to app so it doesn't hang
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "response", requestId: msg.requestId, text: "", error: String(err) }));
+    }
+  }
 
   markDispatchIdle();
 }

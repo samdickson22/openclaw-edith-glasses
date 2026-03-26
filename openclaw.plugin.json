@@ -1,6 +1,7 @@
 {
   "id": "openclaw-edith-glasses",
   "channels": ["edith-glasses"],
+  "skills": ["./skills"],
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
