@@ -1,5 +1,5 @@
 ---
-name: setup-edith-glasses
+name: edith
 description: Set up Edith smart glasses as an OpenClaw channel. Run this when the user wants to connect their smart glasses to OpenClaw, mentions "Edith glasses", or provides a link code for glasses setup.
 user-invocable: true
 ---
