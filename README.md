@@ -1,50 +1,64 @@
-# @openclaw/edith-glasses
+# openclaw-edith-glasses
 
-OpenClaw channel plugin for **Edith** — an AI assistant for smart glasses.
+OpenClaw channel plugin for **Edith** — a voice AI assistant for smart glasses.
 
-This plugin connects your smart glasses to your local OpenClaw instance. The plugin connects **outbound** via WebSocket to the Edith app (hosted on Render), so you don't need to expose any ports or set up tunnels.
+Talk to your OpenClaw agent hands-free through your glasses. Say "Hey Edith" and your full agent — with tools, memory, and integrations — responds via the glasses speakers.
 
-## Install
+## Quick setup
 
-```bash
-openclaw plugins install @openclaw/edith-glasses
-```
-
-Or from source:
+Install the skill and let OpenClaw handle everything:
 
 ```bash
-git clone https://github.com/SamDickworthy/openclaw-edith-glasses.git
-openclaw plugins install ./openclaw-edith-glasses
+npx clawhub install edith
 ```
 
-## Configure
+Then tell OpenClaw your link code (shown in the Edith app on your glasses):
 
-Add to your `openclaw.json`:
+> Set up my Edith glasses. My link code is XXXXXXXX
+
+## Manual setup
+
+```bash
+openclaw plugins install openclaw-edith-glasses
+openclaw channels add --channel edith-glasses --token YOUR_LINK_CODE
+openclaw gateway restart
+```
+
+## How it works
+
+```
+Glasses → Edith App (cloud) → WebSocket → This Plugin (your machine) → OpenClaw Agent → Response → Glasses
+```
+
+The plugin connects **outbound** to the Edith app via WebSocket — no port forwarding or tunnels needed. It works exactly like the Discord and Telegram plugins.
+
+## Features
+
+- Voice conversations with your OpenClaw agent
+- Camera/vision queries ("What am I looking at?")
+- Wake word activation ("Hey Edith" / "Ok Edith")
+- Interrupt with "Stop" or a side tap
+- Follow-up conversations without repeating the wake word
+- Automatic reconnection with exponential backoff
+
+## Configuration
+
+After setup, your `openclaw.json` will contain:
 
 ```json
 {
   "channels": {
     "edith-glasses": {
       "enabled": true,
-      "appUrl": "https://your-edith-app.onrender.com",
+      "appUrl": "https://edith-production-a63c.up.railway.app",
       "linkCode": "YOUR_LINK_CODE"
     }
   }
 }
 ```
 
-Get your **Link Code** from the Edith app settings page on your glasses.
+The `appUrl` defaults to the hosted Edith app. The `linkCode` is unique to your glasses session — get it from the Edith app settings page.
 
-## How it works
+## License
 
-```
-Glasses → Edith App (cloud) → WebSocket → This Plugin (your machine) → OpenClaw Agent → Response → WebSocket → App → TTS → Glasses
-```
-
-1. You speak through your smart glasses
-2. The Edith app transcribes your speech
-3. This plugin receives the text over WebSocket
-4. OpenClaw processes it through your configured agent (with full tool access, memory, etc.)
-5. The response is sent back and spoken through your glasses
-
-No port forwarding. No tunnels. The plugin initiates the connection outward, just like Discord and Telegram bots do.
+MIT
